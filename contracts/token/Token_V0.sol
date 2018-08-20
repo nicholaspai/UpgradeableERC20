@@ -4,12 +4,13 @@ import "./dataStorage/TokenStorage.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/AddressUtils.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import '../helpers/Ownable.sol';
 
 /**
 * @title Token_V0
 * @notice A basic ERC20 token with modular data storage
 */
-contract Token_V0 is ERC20, TokenStorage {
+contract Token_V0 is ERC20, TokenStorage, Ownable {
     using SafeMath for uint256;
 
     /** Events */
@@ -26,7 +27,7 @@ contract Token_V0 is ERC20, TokenStorage {
 
     /** Functions **/
 
-    function mint(address _to, uint256 _amount) public {
+    function mint(address _to, uint256 _amount) public onlyOwner {
         return _mint(_to, _amount);
     }
 

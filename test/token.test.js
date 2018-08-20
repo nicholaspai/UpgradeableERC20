@@ -13,10 +13,6 @@ contract('Token_V0', _accounts => {
         this.allowances = await AllowanceSheet.new( {from:owner })
         this.balances = await BalanceSheet.new({ from:owner })
 
-        // Load up balance for user
-        this.initialSeed = 10 * 10 ** 18
-        await this.balances.addBalance(tokenHolder, this.initialSeed, {from:owner})
-
         // Set up Token
         this.token_V0 = await Token_V0.new(this.balances.address, this.allowances.address, {from:owner})
 

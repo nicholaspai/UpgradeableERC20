@@ -1,14 +1,17 @@
 const { assertBalance, expectThrow, ZERO_ADDRESS } = require('./helpers/common');
-var BigNumber = require("bignumber.js");
+// var BigNumber = require("bignumber.js");
 
 function Token_V0_Tests(owner, tokenHolder, otherAccount) {
-    describe("Behaves properly like a Pausable, Burnable, Mintable, Standard ERC20 token", function () {
+    describe("Behaves properly like a Burnable, Mintable, Standard ERC20 token", function () {
+        beforeEach(async function () {
+            this.initialSeed = 10 * 10 ** 18
+            await this.token_V0.mint(tokenHolder, this.initialSeed, {from:owner})
+        });
         describe('--BasicToken Tests--', function () {
-
             describe('total supply', function () {
                 it('returns the total amount of tokens', async function () {
                     const totalSupply = await this.token_V0.totalSupply()
-                    assert(totalSupply.eq(0))
+                    assert(totalSupply.eq(this.initialSeed))
                 })
             })
             
