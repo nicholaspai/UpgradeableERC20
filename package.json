@@ -1,0 +1,21 @@
+{
+  "name": "upgradeableerc20",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test-storage": "truffle test ./test/tokenstorage.test.js",
+    "test-token": "truffle test ./test/token.test.js",
+    "test-proxy": "truffle test ./test/tokenproxy.test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bignumber.js": "^7.2.1",
+    "openzeppelin-solidity": "^1.12.0",
+    "zos-lib": "^1.3.0"
+  }
+}
