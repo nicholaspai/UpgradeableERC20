@@ -14,6 +14,8 @@
     "test-ownable": "truffle test ./test/Ownable.test.js",
     "test-pausable": "truffle test ./test/Pausable.test.js",
     "test-lockable": "truffle test ./test/Lockable.test.js",
+    "test-upgradeability": "truffle test ./test/DelayedUpgradeabilityProxy.test.js",
+    "test-proxy-delayed": "truffle test ./test/tokenproxy-delayed.test.js",
     "test-all": "truffle test",
     "testrpc": "testrpc"
   },

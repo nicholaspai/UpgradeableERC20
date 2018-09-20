@@ -1,16 +1,17 @@
 pragma solidity ^0.4.24;
 
 import "./dataStorage/TokenStorage.sol";
-import "zos-lib/contracts/upgradeability/UpgradeabilityProxy.sol";
+import '../upgradeability/DelayedUpgradeabilityProxy.sol';
 import '../helpers/Ownable.sol';
 
 /**
-* @title TokenProxy
-* @notice A proxy contract that serves the latest implementation of TokenProxy.
+* @title TokenProxyDelayed
+* @notice A proxy contract that serves the latest implementation of TokenProxy. This proxy
+* upgrades only after a set amount of time (denominated in blocks mined) 
 */
-contract TokenProxy is UpgradeabilityProxy, TokenStorage, Ownable {
+contract TokenProxyDelayed is DelayedUpgradeabilityProxy, TokenStorage, Ownable {
     constructor(address _implementation, address _balances, address _allowances) 
-    UpgradeabilityProxy(_implementation) 
+    DelayedUpgradeabilityProxy(_implementation) 
     TokenStorage(_balances, _allowances) public {}
 
     /**
@@ -19,7 +20,7 @@ contract TokenProxy is UpgradeabilityProxy, TokenStorage, Ownable {
     * @param newImplementation Address of the new implementation.
     */
     function upgradeTo(address newImplementation) public onlyOwner {
-        _upgradeTo(newImplementation);
+        _setPendingUpgrade(newImplementation);
     }
 
     /**

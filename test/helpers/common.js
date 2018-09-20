@@ -1,6 +1,7 @@
 /* Loading all imports */
 const expectThrow = require('./expectThrow');
 const assertBalance = require('./assertBalance');
+const timetravel = require('./timetravel')
 const ZERO_ADDRESS = 0x0000000000000000000000000000000000000000;
 const RANDOM_ADDRESS = 0x3b5855bAEF50EBFdFC89c5E5463f92BCe194EAc9; 
 
@@ -24,11 +25,13 @@ const AllowanceSheet = artifacts.require("AllowanceSheet")
 const Token_V0 = artifacts.require("Token_V0")
 const Token_V1 = artifacts.require("Token_V1")
 const TokenProxy = artifacts.require("TokenProxy")
+const TokenProxyDelayed = artifacts.require("TokenProxyDelayed")
 
 /* Exporting the module */
 module.exports = {
     expectThrow,
     assertBalance,
+    timetravel,
     CommonVariables,
     ZERO_ADDRESS,
     RANDOM_ADDRESS,
@@ -36,5 +39,6 @@ module.exports = {
     AllowanceSheet,
     Token_V0,
     Token_V1,
-    TokenProxy
+    TokenProxy,
+    TokenProxyDelayed
 }

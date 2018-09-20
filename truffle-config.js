@@ -32,10 +32,10 @@ module.exports = {
       network_id: 3,
       gas: 7000000
     },
-	mocha: {
-	   reporter: 'eth-gas-reporter',
-	   reporterOptions: {
-	     gasPrice: 21
-	   }
-	},
+	// mocha: {
+	//    reporter: 'eth-gas-reporter',
+	//    reporterOptions: {
+	//      gasPrice: 21
+	//    }
+	// },
 };
