@@ -1,6 +1,6 @@
 const { CommonVariables, ZERO_ADDRESS, expectThrow } = require('./helpers/common')
 
-const { TokenProxy, Token_V0, BalanceSheet, AllowanceSheet } = require('./helpers/common');
+const { TokenProxy, Token_V0, Token_V1, BalanceSheet, AllowanceSheet } = require('./helpers/common');
 
 contract('TokenProxy', _accounts => {
     const commonVars = new CommonVariables(_accounts);
@@ -32,7 +32,6 @@ contract('TokenProxy', _accounts => {
     describe('Proxy delegates calls to V0 logic contract', function () {
         beforeEach(async function () {
             this.tokenProxy = Token_V0.at(this.proxyAddress)
-            this.logic_v0 = Token_V0.at(this.impl_v0)
 
             await this.allowances.transferOwnership(this.tokenProxy.address)
             await this.balances.transferOwnership(this.tokenProxy.address)
@@ -49,58 +48,75 @@ contract('TokenProxy', _accounts => {
                 assert.equal(supply, 0)
             })
         })
+        describe('approve is enabled in V0', function () {
+            const amount = 10 * 10 ** 18
+            it('approves user to spend for token holder', async function () {
+                await this.tokenProxy.approve(user, amount, { from: proxyOwner })
+                const allowance = await this.tokenProxy.allowance(proxyOwner, user)
+                assert.equal(allowance, amount)
+            }) 
+        })
     })
 
-    // describe('upgradeTo v1', function () {
+    describe('upgradeTo v1', function () {
 
-    //     beforeEach(async function () {
-    //         // Second logic contract 
-    //         this.permissionSheet_v1 = await PermissionSheetMock.new( {from:owner })
-    //         this.validatorSheet_v1 = await ValidatorSheetMock.new(validator, {from:owner} )
-    //         this.token_logic_v1_regulator = (await Regulator.new(this.permissionSheet_v1.address, this.validatorSheet_v1.address, { from:owner })).address
-    //         this.impl_v1 = (await PermissionedToken.new(this.token_logic_v1_regulator, this.proxyBalancesStorage, this.proxyAllowancesStorage,{ from:owner })).address
-    //     })
-    //     describe('owner calls upgradeTo', function () {
-    //         const from = proxyOwner
+        beforeEach(async function () {
+            // Second logic contract
+            this.impl_v1 = (await Token_V1.new(ZERO_ADDRESS, ZERO_ADDRESS, { from:owner })).address
+        })
+        describe('owner calls upgradeTo', function () {
+            const from = proxyOwner
 
-    //         beforeEach(async function () {
-    //             const { logs } = await this.proxy.upgradeTo(this.impl_v1, { from })
-    //             this.tokenProxy = PermissionedToken.at(this.proxyAddress)
-
-    //             this.logic_v0 = PermissionedToken.at(this.impl_v0)
-    //             this.logic_v1 = PermissionedToken.at(this.impl_v1)
-
-    //             this.logs = logs
-    //             this.event = this.logs.find(l => l.event === 'Upgraded').event
-    //             this.newImplementation = this.logs.find(l => l.event === 'Upgraded').args.implementation
-    //         })
-    //         it('upgrades to V1 implementation', async function () {
-    //             this.implementation = await this.proxy.implementation( { from })
-    //             assert.equal(this.implementation, this.impl_v1)
-    //         })
-    //         it('emits an Upgraded event', async function () {
-    //             assert.equal(this.logs.length, 1)
-    //             assert.equal(this.newImplementation, this.impl_v1)
-    //         })
-    //         describe('proxy storages do not change even though logic storages changes', function () {
-    //             it('V0 logic has original balances, allowances, and regulator...', async function () {
-    //                 assert.equal(await this.logic_v0.balances(), this.proxyBalancesStorage)
-    //                 assert.equal(await this.logic_v0.allowances(), this.proxyAllowancesStorage)
-    //                 assert.equal(await this.logic_v0.regulator(), this.proxyRegulator)
-    //             })
-    //             it('V1 logic has a new regulator', async function () {
-    //                 assert.equal(await this.logic_v1.regulator(), this.token_logic_v1_regulator)
-    //             })
-    //             it('proxy storage maintains its original regulator', async function () {
-    //                 assert.equal(await this.proxy.regulator(), this.proxyRegulator)
-    //             })
-    //         })
-    //     })
-    //     describe('Regulator implementation owner calls upgradeTo', function () {
-    //         const from = owner
-    //         it('reverts', async function () {
-    //             await expectRevert(this.proxy.upgradeTo(this.impl_v1, {from}))
-    //         })
-    //     })
-    // })
+            beforeEach(async function () {
+                const { logs } = await this.proxy.upgradeTo(this.impl_v1, { from })
+                this.logs = logs
+                this.event = this.logs.find(l => l.event === 'Upgraded').event
+                this.newImplementation = this.logs.find(l => l.event === 'Upgraded').args.implementation
+            })
+            it('upgrades to V1 implementation', async function () {
+                this.implementation = await this.proxy.implementation()
+                assert.equal(this.implementation, this.impl_v1)
+            })
+            it('emits an Upgraded event', async function () {
+                assert.equal(this.logs.length, 1)
+                assert.equal(this.newImplementation, this.impl_v1)
+            })
+        })
+        describe('Non-proxy-owner calls upgradeTo', function () {
+            const from = owner
+            it('reverts', async function () {
+                await expectThrow(this.proxy.upgradeTo(this.impl_v1, {from}))
+            })
+        })
+        describe('Proxy can now delegate calls to V1 logic contract', function () {
+            beforeEach(async function () {
+                await this.proxy.upgradeTo(this.impl_v1, { from })
+                this.tokenProxy = Token_V1.at(this.proxyAddress)
+            })
+            describe('proxy storages do not change', function () {
+                it('Proxy has original balances, allowances after upgrade', async function () {
+                    assert.equal(await this.tokenProxy.balances(), this.balances.address)
+                    assert.equal(await this.tokenProxy.allowances(), this.allowances.address)
+                })
+            })
+            describe('totalSupply', function () {
+                it('returns totalSupply', async function () {
+                    const supply = await this.tokenProxy.totalSupply()
+                    assert.equal(supply, 0)
+                })
+            })
+            describe('approve is disabled by default in V1', function () {
+                const amount = 10 * 10 ** 18
+                it('reverts', async function () {
+                    await expectThrow(this.tokenProxy.approve(user, amount, { from: proxyOwner }))
+                }) 
+            })
+            describe('increaseApproval now enabled in V1', function () {
+                const amount = 10 * 10 ** 18
+                it('increases user allowance', async function () {
+                    await this.tokenProxy.increaseApproval(user, amount, { from: proxyOwner })
+                }) 
+            })
+        })
+    })
 })

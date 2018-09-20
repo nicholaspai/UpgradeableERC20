@@ -22,6 +22,7 @@ class CommonVariables {
 const BalanceSheet = artifacts.require("BalanceSheet")
 const AllowanceSheet = artifacts.require("AllowanceSheet")
 const Token_V0 = artifacts.require("Token_V0")
+const Token_V1 = artifacts.require("Token_V1")
 const TokenProxy = artifacts.require("TokenProxy")
 
 /* Exporting the module */
@@ -34,5 +35,6 @@ module.exports = {
     BalanceSheet,
     AllowanceSheet,
     Token_V0,
+    Token_V1,
     TokenProxy
 }

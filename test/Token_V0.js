@@ -1,5 +1,4 @@
 const { assertBalance, expectThrow, ZERO_ADDRESS } = require('./helpers/common');
-// var BigNumber = require("bignumber.js");
 
 function Token_V0_Tests(owner, tokenHolder, otherAccount) {
     describe("Behaves properly like a Burnable, Mintable, Standard ERC20 token", function () {
@@ -62,9 +61,7 @@ function Token_V0_Tests(owner, tokenHolder, otherAccount) {
                     })
                 })
             })
-        })
-        
-        
+        })      
         describe('--StandardToken Tests--', function () {
             
             describe('approve', function () {
@@ -253,6 +250,76 @@ function Token_V0_Tests(owner, tokenHolder, otherAccount) {
                     })
                 })
 
+            })
+        })
+        describe('--BurnableToken Tests--', function () {
+            const from = tokenHolder
+            
+            describe('when the given amount is not greater than balance of the sender', function () {
+                const amount = 1 * 10 ** 18
+                const amountAfterBurn = 9 * 10 ** 18
+                
+                it('burns the requested amount', async function () {
+                    await this.token_V0.burn(amount, { from })
+                    const balance = await this.token_V0.balanceOf(from)
+                    assertBalance(this.token_V0, tokenHolder, amountAfterBurn)
+                    assert((await this.token_V0.totalSupply()).eq(amountAfterBurn))
+                })
+                
+                it('emits a burn event', async function () {
+                    const { logs } = await this.token_V0.burn(amount, { from })
+                    assert.equal(logs.length, 2)
+                    assert.equal(logs[0].event, 'Burn')
+                    assert.equal(logs[0].args.burner, tokenHolder)
+                    assert(logs[0].args.value.eq(amount))
+                    
+                    assert.equal(logs[1].event, 'Transfer')
+                    assert.equal(logs[1].args.from, tokenHolder)
+                    assert.equal(logs[1].args.to, ZERO_ADDRESS)
+                    assert(logs[1].args.value.eq(amount))
+                })
+            })
+            describe('when the given amount is greater than balance of the sender', function () {
+                const amount = 11 * 10 ** 18
+                it('reverts', async function () {
+                    await expectThrow(this.token_V0.burn(amount, { from }))
+                })
+            }) 
+        })
+        describe('-MintableToken Tests-', function () {
+            const amount = 10 * 10 ** 18
+            const amountAfterMint = 20 * 10 ** 18
+            const minter = owner
+            
+            describe('when the sender is the token owner', function () {
+                const from = owner
+
+                it('mints the requested amount', async function () {
+                    await this.token_V0.mint(tokenHolder, amount, { from:minter })
+                    assertBalance(this.token_V0, tokenHolder, amountAfterMint)
+                    assert((await this.token_V0.totalSupply()).eq(amountAfterMint))
+                })
+                
+                it('emits a mint and transfer event', async function () {
+                    const { logs } = await this.token_V0.mint(tokenHolder, amount, { from:minter })
+                    
+                    assert.equal(logs.length, 2)
+                    assert.equal(logs[0].event, 'Mint')
+                    assert.equal(logs[0].args.to, tokenHolder)
+                    assert(logs[0].args.value.eq(amount))
+                    assert.equal(logs[1].event, 'Transfer')
+                    assert.equal(logs[1].args.from, ZERO_ADDRESS)
+                    assert.equal(logs[1].args.to, tokenHolder)
+                    assert(logs[1].args.value.eq(amount))
+                })
+            })
+            
+            describe('when the sender is not the token owner', function () {
+                const minter = otherAccount
+                
+                it('reverts', async function () {
+                    await expectThrow(this.token_V0.mint(tokenHolder, amount, { from:minter }))
+                })
             })
         })
         
