@@ -5,11 +5,6 @@ var AllowanceSheet = artifacts.require("./AllowanceSheet.sol");
 
 module.exports = function(deployer, network, accounts) {
   let owner = accounts[0];
-  Token_V0.deployed().then(function (impl_v0) {
-  	BalanceSheet.deployed().then(function (balances) {
-  		AllowanceSheet.deployed().then(function (allowances) {
-  			deployer.deploy(TokenProxy, impl_v0.address, balances.address, allowances.address, {from:owner});
-  		})
-  	})
-  })
+  deployer.deploy(TokenProxy, Token_V0.address, BalanceSheet.address, AllowanceSheet.address, {from:owner});
+
 };
