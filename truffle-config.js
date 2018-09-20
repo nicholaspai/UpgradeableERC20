@@ -11,6 +11,8 @@
  *     gasPrice: 10000000000,
  *   },
  */
+const HDWalletProvider = require("truffle-hdwallet-provider");
+require('dotenv').config()  // Stores environment-specific variable from '.env' to process.env
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
@@ -23,6 +25,13 @@ module.exports = {
 			network_id: '*',
 		}
 	},
+	ropsten: {
+      provider: function () {
+          return new HDWalletProvider(process.env.METAMASK_MNEMONIC, "https://ropsten.infura.io/v3/" + process.env.INFURA_API_KEY)
+      },
+      network_id: 3,
+      gas: 7000000
+    },
 	mocha: {
 	   reporter: 'eth-gas-reporter',
 	   reporterOptions: {

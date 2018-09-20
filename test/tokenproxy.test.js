@@ -90,7 +90,7 @@ contract('TokenProxy', _accounts => {
         })
         describe('Proxy can now delegate calls to V1 logic contract', function () {
             beforeEach(async function () {
-                await this.proxy.upgradeTo(this.impl_v1, { from })
+                await this.proxy.upgradeTo(this.impl_v1, { from:proxyOwner })
                 this.tokenProxy = Token_V1.at(this.proxyAddress)
             })
             describe('proxy storages do not change', function () {
