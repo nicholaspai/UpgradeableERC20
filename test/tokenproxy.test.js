@@ -19,6 +19,7 @@ contract('TokenProxy', _accounts => {
         // Setting up Proxy initially at version 0 with data storage
         this.proxy = await TokenProxy.new(this.impl_v0, this.balances.address, this.allowances.address, { from:proxyOwner })
         this.proxyAddress = this.proxy.address
+
     })
 
     describe('implementation', function () {
@@ -92,6 +93,11 @@ contract('TokenProxy', _accounts => {
             beforeEach(async function () {
                 await this.proxy.upgradeTo(this.impl_v1, { from:proxyOwner })
                 this.tokenProxy = Token_V1.at(this.proxyAddress)
+
+                await this.allowances.transferOwnership(this.tokenProxy.address)
+                await this.balances.transferOwnership(this.tokenProxy.address)
+                await this.tokenProxy.claimBalanceOwnership()
+                await this.tokenProxy.claimAllowanceOwnership()
             })
             describe('proxy storages do not change', function () {
                 it('Proxy has original balances, allowances after upgrade', async function () {
