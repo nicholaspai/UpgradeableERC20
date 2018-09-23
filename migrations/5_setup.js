@@ -5,6 +5,7 @@ var AllowanceSheet = artifacts.require("./AllowanceSheet.sol");
 
 module.exports = function(deployer, network, accounts) {
   let owner = accounts[0];
+  console.log('account claiming contracts as owner: ' + owner)
   Token_V0.deployed().then(proxy => {
     BalanceSheet.deployed().then(function (balances) {
       AllowanceSheet.deployed().then(function (allowances) {
