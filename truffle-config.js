@@ -23,15 +23,15 @@ module.exports = {
 			host: 'localhost',
 			port: 8545,
 			network_id: '*',
-		}
+		},
+		ropsten: {
+	      provider: function () {
+	          return new HDWalletProvider(process.env.METAMASK_MNEMONIC, "https://ropsten.infura.io/v3/" + process.env.INFURA_API_KEY)
+	      },
+	      network_id: 3,
+	      gas: 7000000
+	    },
 	},
-	ropsten: {
-      provider: function () {
-          return new HDWalletProvider(process.env.METAMASK_MNEMONIC, "https://ropsten.infura.io/v3/" + process.env.INFURA_API_KEY)
-      },
-      network_id: 3,
-      gas: 7000000
-    },
 	mocha: {
 	   reporter: 'eth-gas-reporter',
 	   reporterOptions: {

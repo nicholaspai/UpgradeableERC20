@@ -1325,6 +1325,42 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {
+    "3": {
+      "events": {
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "implementation",
+              "type": "address"
+            }
+          ],
+          "name": "Upgraded",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x38bce9fb36c34bc67d23ebb73cf6027dda382c62",
+      "transactionHash": "0x12ad679290986f7418d4257f1944bb725a5fb8771ee0f14a1d41f75d2821ca60"
+    },
     "1537465576434": {
       "events": {},
       "links": {},
@@ -1339,5 +1375,5 @@
     }
   },
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-09-23T01:10:09.344Z"
+  "updatedAt": "2018-09-23T18:15:57.213Z"
 }
