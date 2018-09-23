@@ -5,11 +5,9 @@ import "../helpers/Lockable.sol";
 import "../helpers/Pausable.sol";
 
 /**
-* @title PermissionedToken
-* @notice A permissioned token that enables transfers, withdrawals, and deposits to occur 
-* if and only if it is approved by an on-chain Regulator service. PermissionedToken is an
-* ERC-20 smart contract representing ownership of securities and overrides the
-* transfer, burn, and mint methods to check with the Regulator.
+* @title Token_V1
+* @notice Adds pausability and disables approve() to defend against double-spend attacks in addition
+* to inherited Token_V0 behavior
 */
 contract Token_V1 is Token_V0, Pausable, Lockable {
     using SafeMath for uint256;
